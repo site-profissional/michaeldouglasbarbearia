@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site em Construção | Victor - siteprofissional.pro</title>
+  <meta name="description" content="Site em construção por Victor. Em breve uma nova presença online profissional, rápida e estratégica em siteprofissional.pro." />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Site em Construção | Victor - siteprofissional.pro" />
+  <meta property="og:description" content="Aguarde, o melhor está por vir. Em breve em siteprofissional.pro" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://siteprofissional.pro" />
+
+  <style>
+    /* ============================================================
+       RESET & VARIÁVEIS
+    ============================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --green-bright:   #00ff88;
+      --green-mid:      #00cc66;
+      --green-dim:      #00ff4422;
+      --green-glow:     #00ff8855;
+      --black:          #000000;
+      --black-deep:     #020c06;
+      --black-card:     #040d07ee;
+      --grey-text:      #7aab8a;
+      --white-text:     #d4ffe6;
+      --font-mono:      'Courier New', Courier, monospace;
+      --font-display:   Georgia, 'Times New Roman', serif;
+      --transition:     0.3s ease;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--black-deep);
+      color: var(--white-text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* ============================================================
+       CANVAS DE PARTÍCULAS (FUNDO)
+    ============================================================ */
+    #canvas-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       SCANLINES OVERLAY
+    ============================================================ */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 136, 0.015) 2px,
+        rgba(0, 255, 136, 0.015) 4px
+      );
+    }
+
+    /* Glow radial no centro */
+    .glow-center {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 70% 60% at 50% 50%,
+        rgba(0, 255, 136, 0.06) 0%,
+        transparent 70%
+      );
+    }
+
+    /* ============================================================
+       WRAPPER PRINCIPAL
+    ============================================================ */
+    .wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 820px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ============================================================
+       TOPO — LOGO + DOMÍNIO
+    ============================================================ */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.12);
+    }
+
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--green-bright);
+      text-shadow: 0 0 18px var(--green-glow), 0 0 40px rgba(0,255,136,0.2);
+      position: relative;
+    }
+
+    /* cursor piscante após o logo */
+    .logo::after {
+      content: '_';
+      animation: blink 1s step-end infinite;
+    }
+
+    .domain-badge {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: var(--grey-text);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      padding: 0.3rem 0.75rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: var(--transition);
+      text-transform: lowercase;
+    }
+
+    .domain-badge:hover {
+      color: var(--green-bright);
+      border-color: var(--green-mid);
+      box-shadow: 0 0 12px var(--green-glow);
+    }
+
+    /* ============================================================
+       CARD GLASSMORPHISM
+    ============================================================ */
+    .card {
+      width: 100%;
+      background: var(--black-card);
+      border: 1px solid rgba(0, 255, 136, 0.14);
+      border-radius: 4px;
+      padding: 3rem 2.5rem 3rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow:
+        0 0 0 1px rgba(0,255,136,0.04),
+        0 4px 40px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(0,255,136,0.06);
+    }
+
+    /* linha decorativa superior do card */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green-mid), transparent);
+      opacity: 0.7;
+    }
+
+    /* canto decorativo bottom-right */
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 60px; height: 60px;
+      border-bottom: 2px solid rgba(0,255,136,0.15);
+      border-right: 2px solid rgba(0,255,136,0.15);
+    }
+
+    /* ============================================================
+       STATUS TAG
+    ============================================================ */
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--green-mid);
+      margin-bottom: 1.8rem;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green-bright);
+      box-shadow: 0 0 10px var(--green-bright);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    /* ============================================================
+       TÍTULO PRINCIPAL
+    ============================================================ */
+    .main-title {
+      font-family: var(--font-mono);
+      font-size: clamp(2rem, 6vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+      color: var(--white-text);
+      margin-bottom: 0.9rem;
+    }
+
+    /* Span de destaque verde */
+    .main-title .accent {
+      color: var(--green-bright);
+      text-shadow: 0 0 24px var(--green-glow), 0 0 60px rgba(0,255,136,0.15);
+    }
+
+    /* ============================================================
+       SUBTÍTULO + TEXTOS
+    ============================================================ */
+    .subtitle {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      color: var(--grey-text);
+      line-height: 1.7;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .highlight-phrase {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--green-bright);
+      letter-spacing: 0.04em;
+      margin: 1.5rem 0 1rem;
+      text-shadow: 0 0 20px var(--green-glow);
+    }
+
+    .highlight-phrase::before {
+      content: '> ';
+      opacity: 0.5;
+    }
+
+    .body-text {
+      font-size: 0.82rem;
+      color: rgba(122, 171, 138, 0.75);
+      line-height: 1.75;
+      max-width: 520px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ============================================================
+       BARRA DE PROGRESSO DECORATIVA
+    ============================================================ */
+    .progress-area {
+      width: 100%;
+      margin-top: 2.5rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--grey-text);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(0, 255, 136, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green-mid), var(--green-bright));
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--green-glow);
+      animation: fill-bar 3s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+    }
+
+    /* ============================================================
+       SEPARADOR
+    ============================================================ */
+    .sep {
+      width: 100%;
+      height: 1px;
+      background: rgba(0, 255, 136, 0.08);
+      margin: 2rem 0;
+    }
+
+    /* ============================================================
+       CTA VISUAL (botão decorativo)
+    ============================================================ */
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: transparent;
+      border: 1px solid var(--green-mid);
+      color: var(--green-bright);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.5rem;
+      border-radius: 2px;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .cta-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 255, 136, 0.06);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+
+    .cta-btn:hover::before {
+      transform: translateX(0);
+    }
+
+    .cta-btn:hover {
+      box-shadow: 0 0 20px var(--green-glow);
+    }
+
+    .cta-icon {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--green-bright);
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .cta-icon::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 5px; height: 5px;
+      background: var(--green-bright);
+      border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    .cta-note {
+      font-size: 0.68rem;
+      color: rgba(122, 171, 138, 0.5);
+      letter-spacing: 0.05em;
+    }
+
+    /* ============================================================
+       RODAPÉ
+    ============================================================ */
+    footer {
+      margin-top: 3rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: rgba(122, 171, 138, 0.35);
+      text-align: center;
+    }
+
+    footer a {
+      color: rgba(0, 255, 136, 0.45);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    footer a:hover {
+      color: var(--green-bright);
+    }
+
+    /* ============================================================
+       TYPING TEXT (JS vai controlar)
+    ============================================================ */
+    #typed-text {
+      display: inline;
+    }
+
+    #typed-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--green-bright);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.8s step-end infinite;
+      box-shadow: 0 0 8px var(--green-bright);
+    }
+
+    /* ============================================================
+       ANIMAÇÕES
+    ============================================================ */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    @keyframes fill-bar {
+      to { width: 72%; }
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Entrada suave dos elementos */
+    .card         { animation: fade-up 0.8s ease 0.2s both; }
+    .top-bar      { animation: fade-up 0.6s ease 0s both; }
+
+    /* ============================================================
+       RESPONSIVIDADE
+    ============================================================ */
+    @media (max-width: 600px) {
+      .card {
+        padding: 2rem 1.4rem;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: flex-start;
+        margin-bottom: 2.2rem;
+      }
+
+      .cta-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fundo: canvas de partículas -->
+  <canvas id="canvas-bg" aria-hidden="true"></canvas>
+
+  <!-- Efeitos de overlay -->
+  <div class="scanlines"   aria-hidden="true"></div>
+  <div class="glow-center" aria-hidden="true"></div>
+
+  <!-- ==========================================
+       CONTEÚDO PRINCIPAL
+  =========================================== -->
+  <main class="wrapper" role="main">
+
+    <!-- Topo: logo + domínio -->
+    <header class="top-bar">
+      <div class="logo" aria-label="Victor">Victor</div>
+      <a class="domain-badge" href="https://siteprofissional.pro" aria-label="siteprofissional.pro">
+        siteprofissional.pro
+      </a>
+    </header>
+
+    <!-- Card central -->
+    <article class="card">
+
+      <!-- Tag de status ativo -->
+      <div class="status-tag" aria-label="Status: inicializando">
+        <span class="status-dot" aria-hidden="true"></span>
+        inicializando sistema
+      </div>
+
+      <!-- Título com efeito de digitação -->
+      <h1 class="main-title">
+        <span class="accent" id="typed-text"></span><span id="typed-cursor" aria-hidden="true"></span>
+        <br>em construção.
+      </h1>
+
+      <!-- Subtítulo -->
+      <p class="subtitle">
+        Estamos preparando uma nova experiência digital.
+      </p>
+
+      <!-- Frase de destaque -->
+      <p class="highlight-phrase" aria-label="Aguarde, o melhor está por vir.">
+        Aguarde, o melhor está por vir.
+      </p>
+
+      <!-- Texto complementar -->
+      <p class="body-text">
+        Em breve, este espaço receberá uma presença online profissional,
+        rápida e estratégica — construída para converter visitantes em clientes.
+      </p>
+
+      <!-- Barra de progresso decorativa -->
+      <div class="progress-area" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso da construção: 72%">
+        <div class="progress-label">
+          <span>build progress</span>
+          <span>72%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="sep" aria-hidden="true"></div>
+
+      <!-- CTA visual -->
+      <div class="cta-row">
+        <span class="cta-btn" role="status" aria-label="Em desenvolvimento">
+          <span class="cta-icon" aria-hidden="true"></span>
+          Em desenvolvimento
+        </span>
+        <span class="cta-note">Por Victor — siteprofissional.pro</span>
+      </div>
+
+    </article><!-- /card -->
+
+    <!-- Rodapé -->
+    <footer>
+      <p>© 2026 Victor —
+        <a href="https://siteprofissional.pro" rel="noopener">siteprofissional.pro</a>
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- ==========================================
+       JAVASCRIPT
+  =========================================== -->
+  <script>
+    /* ============================================================
+       1. CANVAS — PARTÍCULAS ESTILO MATRIX / REDE
+    ============================================================ */
+    (function () {
+      const canvas = document.getElementById('canvas-bg');
+      const ctx    = canvas.getContext('2d');
+
+      let W, H, nodes, animFrame;
+
+      const NODE_COUNT   = 60;
+      const MAX_DIST     = 140;
+      const GREEN_BRIGHT = '#00ff88';
+      const GREEN_DIM    = 'rgba(0, 255, 136,';
+
+      /* Resize */
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      /* Cria nós com posição e velocidade aleatória */
+      function createNodes() {
+        nodes = [];
+        for (let i = 0; i < NODE_COUNT; i++) {
+          nodes.push({
+            x:  Math.random() * W,
+            y:  Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            r:  Math.random() * 1.5 + 0.4,
+          });
+        }
+      }
+
+      /* Desenha frame */
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        /* Move nós */
+        nodes.forEach(n => {
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+        });
+
+        /* Linhas entre nós próximos */
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx   = nodes[i].x - nodes[j].x;
+            const dy   = nodes[i].y - nodes[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MAX_DIST) {
+              const alpha = (1 - dist / MAX_DIST) * 0.22;
+              ctx.beginPath();
+              ctx.strokeStyle = GREEN_DIM + alpha + ')';
+              ctx.lineWidth   = 0.8;
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        /* Pontos */
+        nodes.forEach(n => {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = GREEN_DIM + '0.55)';
+          ctx.fill();
+        });
+
+        animFrame = requestAnimationFrame(draw);
+      }
+
+      /* Init */
+      resize();
+      createNodes();
+      draw();
+
+      window.addEventListener('resize', () => {
+        resize();
+        createNodes();
+      });
+    })();
+
+
+    /* ============================================================
+       2. EFEITO DE DIGITAÇÃO (TYPING) NO TÍTULO
+    ============================================================ */
+    (function () {
+      const target  = document.getElementById('typed-text');
+      const phrase  = 'Site';
+      let   i       = 0;
+      let   forward = true;
+      let   pause   = 0;
+
+      function type() {
+        if (pause > 0) {
+          pause--;
+          setTimeout(type, 80);
+          return;
+        }
+
+        if (forward) {
+          if (i <= phrase.length) {
+            target.textContent = phrase.slice(0, i);
+            i++;
+            setTimeout(type, i === phrase.length + 1 ? 2000 : 110);
+          } else {
+            /* Chegou ao fim — pausa e apaga */
+            forward = false;
+            pause   = 10;
+            setTimeout(type, 80);
+          }
+        } else {
+          if (i >= 0) {
+            target.textContent = phrase.slice(0, i);
+            i--;
+            setTimeout(type, 70);
+          } else {
+            /* Chegou ao início — pausa e redigita */
+            forward = true;
+            pause   = 8;
+            setTimeout(type, 80);
+          }
+        }
+      }
+
+      /* Inicia com pequeno delay para a animação de entrada terminar */
+      setTimeout(type, 900);
+    })();
+
+
+    /* ============================================================
+       3. BRILHO SUAVE NO CARD AO MOVER O MOUSE
+    ============================================================ */
+    (function () {
+      const card = document.querySelector('.card');
+      if (!card) return;
+
+      document.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x    = e.clientX - rect.left;
+        const y    = e.clientY - rect.top;
+
+        /* Só aplica se o mouse estiver próximo do card */
+        const margin = 200;
+        if (
+          x > -margin && x < rect.width  + margin &&
+          y > -margin && y < rect.height + margin
+        ) {
+          card.style.setProperty('--mx', x + 'px');
+          card.style.setProperty('--my', y + 'px');
+          card.style.backgroundImage = `
+            radial-gradient(
+              400px circle at ${x}px ${y}px,
+              rgba(0, 255, 136, 0.04) 0%,
+              transparent 60%
+            ),
+            none
+          `;
+        } else {
+          card.style.backgroundImage = 'none';
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
